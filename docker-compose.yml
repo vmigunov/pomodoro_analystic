@@ -1,0 +1,36 @@
+networks:
+  app-network:
+    driver: bridge
+
+services:
+
+  pg:
+    container_name: pomodoro
+    image: postgres:latest
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: "pomodoro"
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "123"
+      PGPORT: 5432
+    expose:
+      - 5432
+    ports:
+      - 5432:5432
+    networks:
+      - app-network
+
+  pgadmin:
+    image: dpage/pgadmin4
+    # http://localhost:15433 pgadmin client (HTTPS will fail)
+    ports:
+      - 15433:80
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
+    depends_on:
+      - pg
+    volumes:
+      - ./_pgadmin-data/:/var/lib/pgadmin/
+    networks:
+      - app-network

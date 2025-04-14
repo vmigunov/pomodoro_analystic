@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from .ping import router as ping_router
-from .tasks import router as task_router
+from app.handlers.ping import router as ping_router
+from app.handlers.tasks import router as task_router
 
 router = APIRouter()
 

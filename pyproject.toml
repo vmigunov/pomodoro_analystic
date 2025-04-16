@@ -19,7 +19,8 @@ dependencies = [
 # This ensures that pytest recognizes modules inside the "app" directory
 [tool.pytest.ini_options]
 pythonpath = [
-".", "app"
+".",
+"app",
 ]
 # Enable automatic handling of async tests
 # This allows pytest to handle async functions without needing

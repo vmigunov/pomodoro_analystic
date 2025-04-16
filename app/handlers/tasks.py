@@ -2,20 +2,23 @@ from typing import Annotated
 
 from fastapi import APIRouter, status, Depends
 
+from app.repository.cache_task import TaskCache
 from app.schema.task import Task
 from app.repository.task import TaskRepository
-from app.handlers.dependecy import get_tasks_repository
+from app.service.task import TaskService
+from dependecy import (
+    get_tasks_repository,
+    get_tasks_cahce_repository,
+    get_tasks_service,
+)
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
 
 
 @router.get("/all", response_model=list[Task])
-async def get_tasks(
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
-):
-    tasks = task_repository.get_tasks()
-    return tasks
+async def get_tasks(task_service: Annotated[TaskService, Depends(get_tasks_service)]):
+    return task_service.get_tasks()
 
 
 @router.post("/", response_model=Task)

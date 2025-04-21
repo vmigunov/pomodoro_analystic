@@ -20,20 +20,6 @@ services:
     networks:
       - app-network
 
-  pgadmin:
-    image: dpage/pgadmin4
-    # http://localhost:15433 pgadmin client (HTTPS will fail)
-    ports:
-      - 15433:80
-    environment:
-      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL}
-      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD}
-    depends_on:
-      - pg
-    volumes:
-      - ./_pgadmin-data/:/var/lib/pgadmin/
-    networks:
-      - app-network
 
   cache:
     image: redis:7.2.4-alpine

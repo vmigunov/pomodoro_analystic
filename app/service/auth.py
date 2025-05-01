@@ -2,7 +2,7 @@ import random
 import string
 
 import datetime as dt
-from datetime import timedelta, timezone
+from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from dataclasses import dataclass
 
@@ -26,15 +26,18 @@ class AuthService:
     def login(self, username: str, password: str) -> UserLoginSchema:
         user = self.user_repository.get_user_by_username(username)
         self._validate_auth_user(user, password)
-        access_token = self.generate_access_token(user_id=user.id)
-        return UserLoginSchema(user_id=user.id, access_token=user.access_token)
+
+        access_token = self.generate_access_token(user_id=user.id)  # Генерируем токен
+        return UserLoginSchema(
+            user_id=user.id, access_token=access_token
+        )  # Возвращаем новый токен, а не user.access_token
 
     @staticmethod
     def _validate_auth_user(user: UserProfile, password: str) -> None:
         if not user:
-            raise UserNotFoundException
+            raise UserNotFoundException("Пользователь не найден")
         if user.password != password:
-            raise UserNotCorrectPasswordException
+            raise UserNotCorrectPasswordException("Неверный пароль")
 
     def generate_access_token(self, user_id: int) -> str:
         expires_date_unix = (dt.datetime.utcnow() + timedelta(days=7)).timestamp()

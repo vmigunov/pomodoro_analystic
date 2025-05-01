@@ -1,28 +1,49 @@
+version: '3.8'
+
 networks:
   app-network:
     driver: bridge
 
 services:
-
-  pg:
-    container_name: pomodoro
-    image: postgres:latest
-    restart: unless-stopped
+  # PostgreSQL (порт 5433 → 5432 внутри контейнера)
+  db:
+    image: postgres:16
+    container_name: postgres-db
     environment:
       POSTGRES_DB: "pomodoro"
       POSTGRES_USER: "postgres"
       POSTGRES_PASSWORD: "123"
-      PGPORT: 5432
-    expose:
-      - 5432
     ports:
-      - 5432:5432
+      - "5433:5432"
     networks:
       - app-network
 
-
+  # Redis (порт 6380 → 6379 внутри контейнера)
   cache:
-    image: redis:7.2.4-alpine
-    restart: always
+    image: redis:7.2-alpine
     ports:
-    - '6379:6379'
+      - "6380:6379"
+    networks:
+      - app-network
+
+  # FastAPI приложение
+  app:
+    image: python:3.12-slim  # Python 3.12 (легковесный образ)
+    container_name: fastapi-app
+    command: >
+      sh -c "pip install uv && 
+      uv pip install -r requirements.txt && 
+      uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
+    volumes:
+      - .:/app
+    working_dir: /app
+    ports:
+      - "8000:8000"  # Пробрасываем порт FastAPI
+    depends_on:
+      - db
+      - cache
+    environment:
+      - PYTHONUNBUFFERED=1
+      - PYTHONPATH=/app  # Путь к модулям (если нужно)
+    networks:
+      - app-network

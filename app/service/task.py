@@ -9,13 +9,13 @@ class TaskService:
     task_cache: TaskCache
 
     def get_tasks(self) -> list[Task]:
-        # if cache_tasks := self.task_cache.get_tasks():
-        #     return cache_tasks
-        # else:
-        tasks = self.task_repository.get_tasks()
-        tasks_schema = [Task.model_validate(task) for task in tasks]
-        self.task_cache.set_tasks(tasks_schema)
-        return tasks_schema
+        if cache_tasks := self.task_cache.get_tasks():
+            return cache_tasks
+        else:
+            tasks = self.task_repository.get_tasks()
+            tasks_schema = [Task.model_validate(task) for task in tasks]
+            self.task_cache.set_tasks(tasks_schema)
+            return tasks_schema
 
     def create_task(self, body: TaskCreateSchema, user_id: int) -> Task:
         task_id = self.task_repository.create_task(body, user_id)
@@ -28,7 +28,7 @@ class TaskService:
             raise ValueError("Task not found")
         task = self.task_repository.update_task_name(task_id=task_id, name=name)
         return Task.model_validate(task)
-    
+
     def delete_task(self, task_id: int, user_id: int) -> None:
         task = self.task_repository.get_user_task(user_id=user_id, task_id=task_id)
         if not task:

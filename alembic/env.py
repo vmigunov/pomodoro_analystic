@@ -63,6 +63,7 @@ def run_migrations_online() -> None:
         config.get_section(config.config_ini_section, {}),
         prefix="sqlalchemy.",
         poolclass=pool.NullPool,
+        connect_args={"client_encoding": "utf8"},  # Указываем кодировку здесь
     )
 
     with connectable.connect() as connection:

@@ -1,16 +1,17 @@
 from typing import Annotated
 
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, HTTPException, status, Depends
 
 from app.repository.cache_task import TaskCache
-from app.schema.task import Task
+from app.schema.task import Task, TaskCreateSchema
 from app.repository.task import TaskRepository
 from app.service.task import TaskService
-from dependecy import (
+from app.dependency import (
     get_tasks_repository,
-    get_tasks_cahce_repository,
+    get_request_user_id,
     get_tasks_service,
 )
+from app.exceptions import TaskNotFound
 
 
 router = APIRouter(prefix="/tasks", tags=["tasks"])
@@ -23,11 +24,11 @@ async def get_tasks(task_service: Annotated[TaskService, Depends(get_tasks_servi
 
 @router.post("/", response_model=Task)
 async def create_task(
-    task: Task,
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
+    body: TaskCreateSchema,
+    task_service: Annotated[TaskService, Depends(get_tasks_service)],
+    user_id: int = Depends(get_request_user_id),
 ):
-    task_id = task_repository.create_task(task)
-    task.id = task_id
+    task = task_service.create_task(body, user_id)
     return task
 
 
@@ -40,15 +41,24 @@ async def task_id(task_id: int):
 async def patch_task(
     task_id: int,
     name: str,
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
+    task_service: Annotated[TaskService, Depends(get_tasks_service)],
+    user_id: int = Depends(get_request_user_id),
 ):
-    return task_repository.update_task_name(task_id, name)
+    try:
+        return task_service.update_task_name(
+            task_id=task_id, name=name, user_id=user_id
+        )
+    except TaskNotFound as e:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=e.detail,
+        )
 
 
 @router.delete("/{task_id}")
 async def delete_task(
     task_id: int,
-    task_repository: Annotated[TaskRepository, Depends(get_tasks_repository)],
+    task_service: Annotated[TaskService, Depends(get_tasks_service)],
+    user_id: int = Depends(get_request_user_id),
 ):
-    task_repository.delete_task(task_id)
-    return {"message": "task deleted seccuessfully"}
+    task_service.delete_task(task_id=task_id, user_id=user_id)

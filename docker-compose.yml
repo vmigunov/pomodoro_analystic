@@ -26,24 +26,3 @@ services:
     networks:
       - app-network
 
-  # FastAPI приложение
-  app:
-    image: python:3.12-slim  # Python 3.12 (легковесный образ)
-    container_name: fastapi-app
-    command: >
-      sh -c "pip install uv && 
-      uv pip install -r requirements.txt && 
-      uvicorn main:app --host 0.0.0.0 --port 8000 --reload"
-    volumes:
-      - .:/app
-    working_dir: /app
-    ports:
-      - "8000:8000"  # Пробрасываем порт FastAPI
-    depends_on:
-      - db
-      - cache
-    environment:
-      - PYTHONUNBUFFERED=1
-      - PYTHONPATH=/app  # Путь к модулям (если нужно)
-    networks:
-      - app-network

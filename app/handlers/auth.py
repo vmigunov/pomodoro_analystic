@@ -35,19 +35,6 @@ async def google_login(
     return RedirectResponse(url=redirect_url)
 
 
-# @router.get(
-#     "/auth/google",
-#     response_class=RedirectResponse,
-# )
-# async def google_auth(
-#     auth_service: Annotated[AuthService, Depends(get_auth_service)],
-#     code: str
-# ):
-#     # Добавляем await перед вызовом асинхронного метода
-#     redirect_url = await auth_service.google_auth(code=code)
-#     return RedirectResponse(url=redirect_url)
-
-
 @router.get("/auth/google", response_class=RedirectResponse)
 async def google_auth(
     auth_service: Annotated[AuthService, Depends(get_auth_service)], code: str
@@ -55,7 +42,6 @@ async def google_auth(
     """Обработка callback от Google OAuth"""
     try:
         login_data = await auth_service.google_auth(code=code)
-        # Перенаправляем на фронтенд с токеном
         return RedirectResponse(
             url=f"/?user_id={login_data.user_id}&token={login_data.access_token}"
         )

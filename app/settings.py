@@ -7,7 +7,7 @@ class Settings(BaseSettings):
     DB_USER: str = "postgres"
     DB_PASSWORD: str = "123"
     # DB_DRIVER: str = 'postgresql+psycopg2' синхронный драйвер
-    DB_DRIVER: str = 'postgresql+asyncpg'  # aсинхронный драйвер
+    DB_DRIVER: str = "postgresql+asyncpg"  # aсинхронный драйвер
     DB_NAME: str = "pomodoro"
     CACHE_HOST: str = "localhost"
     CACHE_PORT: int = 6380
@@ -15,15 +15,17 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "secret+key"
     JWT_ENCODE_ALGORITHM: str = "HS256"
     GOOGLE_CLIENT_ID: str = (
-        ""
+        "1091754126117-a5j86hfpqa240vqmocg49gv882uim3vg.apps.googleusercontent.com"
     )
-    GOOGLE_CLIENT_SECRET: str = ""
-    GOOGLE_REDIRECT_URI: str = ""
-    GOOGLE_TOKEN_URL: str = ""
+    GOOGLE_CLIENT_SECRET: str = "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"
+    GOOGLE_REDIRECT_URI: str = "http://localhost:8000/auth/google"
+    GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
 
     @property
     def db_url(self):
-        print(f'{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}')
+        print(
+            f"{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
+        )
         return f"{self.DB_DRIVER}://{self.DB_USER}:{self.DB_PASSWORD}@{self.DB_HOST}:{self.DB_PORT}/{self.DB_NAME}"
 
     @property

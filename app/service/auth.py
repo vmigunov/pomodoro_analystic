@@ -7,7 +7,7 @@ from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from dataclasses import dataclass
 
-from app.schema.user import UserCreateSchema, UserLoginSchema
+from app.schema.user import UserCreateSchema, UserLoginSchema, YandexUserData
 from app.repository.user import UserRepository
 from app.exceptions import (
     TokenExpired,
@@ -18,6 +18,7 @@ from app.exceptions import (
 from app.models.user import UserProfile
 from app.settings import Settings
 from client.google_client import GoogleClient
+from client.yandex_client import YandexClient
 from app.schema.user import GoogleUserData
 
 
@@ -26,6 +27,10 @@ class AuthService:
     user_repository: UserRepository
     settings: Settings
     google_client: GoogleClient
+    yandex_client: YandexClient
+
+    def get_yandex_redirect_url(self) -> str:
+        return self.settings.yandex_redirect_url
 
     def get_google_redirect_url(self) -> str:
         return self.settings.google_redirect_url
@@ -41,6 +46,25 @@ class AuthService:
             username=user_data.email.split("@")[0],
             password="oauth_user_no_password",
             email=user_data.email,
+            name=user_data.name,
+        )
+        created_user = await self.user_repository.create_user(create_user_data)
+        access_token = self.generate_access_token(user_id=created_user.id)
+        return UserLoginSchema(user_id=created_user.id, access_token=access_token)
+
+    async def yandex_auth(self, code: str):
+        user_data = await self.yandex_client.get_user_info(code=code)
+
+        if user := await self.user_repository.get_user_by_email(
+            email=user_data.default_email
+        ):
+            access_token = self.generate_access_token(user_id=user.id)
+            return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+        create_user_data = UserCreateSchema(
+            username=user_data.default_email.split("@")[0],
+            password="oauth_user_no_password",
+            email=user_data.default_email,
             name=user_data.name,
         )
         created_user = await self.user_repository.create_user(create_user_data)

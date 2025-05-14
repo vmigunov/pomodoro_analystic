@@ -17,9 +17,13 @@ class Settings(BaseSettings):
     GOOGLE_CLIENT_ID: str = (
         "1091754126117-a5j86hfpqa240vqmocg49gv882uim3vg.apps.googleusercontent.com"
     )
-    GOOGLE_CLIENT_SECRET: str = "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"
+    GOOGLE_SECRET_KEY: str = "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"
     GOOGLE_REDIRECT_URI: str = "http://localhost:8000/auth/google"
     GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
+    YANDEX_CLIENT_ID: str = "83204c7968af4c7aaced7ecf2820d6ac"
+    YANDEX_SECRET_KEY: str = "2ecec2b560064f029affbf6467923cfb"
+    YANDEX_REDIRECT_URI: str = "http://localhost:8000/auth/yandex"
+    YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 
     @property
     def db_url(self):
@@ -31,6 +35,11 @@ class Settings(BaseSettings):
     @property
     def google_redirect_url(self) -> str:
         return f"https://accounts.google.com/o/oauth2/auth?response_type=code&client_id={self.GOOGLE_CLIENT_ID}&redirect_uri={self.GOOGLE_REDIRECT_URI}&scope=openid%20profile%20email&access_type=offline"
+    
+    
+    @property
+    def yandex_redirect_url(self) -> str:
+        return f"https://oauth.yandex.ru/authorize?response_type=code&client_id={self.YANDEX_CLIENT_ID}&force_confirm=yes"
 
 
 settings = Settings()

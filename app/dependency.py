@@ -13,6 +13,7 @@ from app.service.auth import AuthService
 from app.settings import Settings
 from app.exceptions import TokenExpired, TokenNotCorrect
 from client.google_client import GoogleClient
+from client.yandex_client import YandexClient
 
 
 async def get_async_client() -> httpx.AsyncClient:
@@ -49,14 +50,22 @@ async def get_google_client(
     return GoogleClient(settings=Settings(), async_client=async_client)
 
 
+async def get_yandex_client(
+    async_client: httpx.AsyncClient = Depends(get_async_client),
+) -> GoogleClient:
+    return YandexClient(settings=Settings(), async_client=async_client)
+
+
 def get_auth_service(
     user_repository: UserRepository = Depends(get_user_repository),
     google_client: GoogleClient = Depends(get_google_client),
+    yandex_client: YandexClient = Depends(get_yandex_client)
 ) -> AuthService:
     return AuthService(
         user_repository=user_repository,
         settings=Settings(),
         google_client=google_client,
+        yandex_client=yandex_client,
     )
 
 

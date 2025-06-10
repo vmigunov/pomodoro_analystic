@@ -15,13 +15,13 @@ class Settings(BaseSettings):
     JWT_SECRET_KEY: str = "secret+key"
     JWT_ENCODE_ALGORITHM: str = "HS256"
     GOOGLE_CLIENT_ID: str = (
-        "1091754126117-a5j86hfpqa240vqmocg49gv882uim3vg.apps.googleusercontent.com"
+        ""
     )
-    GOOGLE_SECRET_KEY: str = "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"
+    GOOGLE_SECRET_KEY: str = ""
     GOOGLE_REDIRECT_URI: str = "http://localhost:8000/auth/google"
     GOOGLE_TOKEN_URL: str = "https://accounts.google.com/o/oauth2/token"
-    YANDEX_CLIENT_ID: str = "83204c7968af4c7aaced7ecf2820d6ac"
-    YANDEX_SECRET_KEY: str = "2ecec2b560064f029affbf6467923cfb"
+    YANDEX_CLIENT_ID: str = ""
+    YANDEX_SECRET_KEY: str = ""
     YANDEX_REDIRECT_URI: str = "http://localhost:8000/auth/yandex"
     YANDEX_TOKEN_URL: str = "https://oauth.yandex.ru/token"
 

@@ -22,7 +22,7 @@ class GoogleClient:
         data = {
             "code": code,
             "client_id": self.settings.GOOGLE_CLIENT_ID,
-            "client_secret": self.settings.GOOGLE_CLIENT_SECRET,
+            "client_secret": self.settings.GOOGLE_SECRET_KEY,
             "redirect_uri": self.settings.GOOGLE_REDIRECT_URI,
             "grant_type": "authorization_code",
         }

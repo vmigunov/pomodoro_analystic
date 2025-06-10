@@ -2,12 +2,9 @@ from typing import Annotated
 
 from fastapi import APIRouter, HTTPException, status, Depends
 
-from app.repository.cache_task import TaskCache
 from app.schema.task import Task, TaskCreateSchema
-from app.repository.task import TaskRepository
 from app.service.task import TaskService
 from app.dependency import (
-    get_tasks_repository,
     get_request_user_id,
     get_tasks_service,
 )

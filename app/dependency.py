@@ -1,5 +1,6 @@
 import httpx
-from fastapi import Depends, HTTPException, Request, Security, security
+
+from fastapi import Depends, HTTPException, Security, security
 from sqlalchemy.orm import Session
 
 

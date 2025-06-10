@@ -16,11 +16,10 @@ class YandexClient:
                 "https://login.yandex.ru/info?format=json",
                 headers={"Authorization": f"OAuth {access_token}"},
             )
-        # print("Response from Yandex:", user_info.json())
         return YandexUserData(**user_info.json(), access_token=access_token)
 
     async def _get_user_access_token(self, code: str) -> str:
-        response = await self.async_client.post(  # <- Без `async with`
+        response = await self.async_client.post(
             self.settings.YANDEX_TOKEN_URL,
             data={
                 "grant_type": "authorization_code",

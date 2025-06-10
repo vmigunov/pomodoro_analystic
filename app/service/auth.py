@@ -1,13 +1,10 @@
-import random
-import string
-import secrets
-
 import datetime as dt
-from datetime import datetime, timedelta, timezone
+
+from datetime import timedelta
 from jose import JWTError, jwt
 from dataclasses import dataclass
 
-from app.schema.user import UserCreateSchema, UserLoginSchema, YandexUserData
+from app.schema.user import UserCreateSchema, UserLoginSchema
 from app.repository.user import UserRepository
 from app.exceptions import (
     TokenExpired,
@@ -75,10 +72,10 @@ class AuthService:
         user = self.user_repository.get_user_by_username(username)
         self._validate_auth_user(user, password)
 
-        access_token = self.generate_access_token(user_id=user.id)  # Генерируем токен
+        access_token = self.generate_access_token(user_id=user.id) 
         return UserLoginSchema(
             user_id=user.id, access_token=access_token
-        )  # Возвращаем новый токен, а не user.access_token
+        ) 
 
     @staticmethod
     def _validate_auth_user(user: UserProfile, password: str) -> None:

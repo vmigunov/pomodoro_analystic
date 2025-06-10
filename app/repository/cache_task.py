@@ -1,5 +1,7 @@
 import json
+
 from redis import Redis
+
 from app.schema.task import Task
 
 

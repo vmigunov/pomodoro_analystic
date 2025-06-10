@@ -1,4 +1,5 @@
 from typing import Optional
+
 from app.database import Base
 from sqlalchemy.orm import Mapped, mapped_column
 

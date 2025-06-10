@@ -1,12 +1,13 @@
 import random
 import string
+import secrets
 
 import datetime as dt
 from datetime import datetime, timedelta, timezone
 from jose import JWTError, jwt
 from dataclasses import dataclass
 
-from app.schema.user import UserLoginSchema
+from app.schema.user import UserCreateSchema, UserLoginSchema
 from app.repository.user import UserRepository
 from app.exceptions import (
     TokenExpired,
@@ -16,12 +17,35 @@ from app.exceptions import (
 )
 from app.models.user import UserProfile
 from app.settings import Settings
+from client.google_client import GoogleClient
+from app.schema.user import GoogleUserData
 
 
 @dataclass
 class AuthService:
     user_repository: UserRepository
     settings: Settings
+    google_client: GoogleClient
+
+    def get_google_redirect_url(self) -> str:
+        return self.settings.google_redirect_url
+
+    async def google_auth(self, code: str) -> UserLoginSchema:
+        user_data: GoogleUserData = await self.google_client.get_user_info(code=code)
+        if user := await self.user_repository.get_user_by_email(email=user_data.email):
+            access_token = self.generate_access_token(user_id=user.id)
+
+            return UserLoginSchema(user_id=user.id, access_token=access_token)
+
+        create_user_data = UserCreateSchema(
+            username=user_data.email.split("@")[0],
+            password="oauth_user_no_password",
+            email=user_data.email,
+            name=user_data.name,
+        )
+        created_user = await self.user_repository.create_user(create_user_data)
+        access_token = self.generate_access_token(user_id=created_user.id)
+        return UserLoginSchema(user_id=created_user.id, access_token=access_token)
 
     def login(self, username: str, password: str) -> UserLoginSchema:
         user = self.user_repository.get_user_by_username(username)

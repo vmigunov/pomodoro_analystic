@@ -1,3 +1,4 @@
+import httpx
 from fastapi import Depends, HTTPException, Request, Security, security
 from sqlalchemy.orm import Session
 
@@ -11,6 +12,11 @@ from app.service.user import UserService
 from app.service.auth import AuthService
 from app.settings import Settings
 from app.exceptions import TokenExpired, TokenNotCorrect
+from client.google_client import GoogleClient
+
+
+async def get_async_client() -> httpx.AsyncClient:
+    return httpx.AsyncClient()
 
 
 def get_tasks_repository(
@@ -37,10 +43,21 @@ def get_user_repository(
     return UserRepository(db_session=db_session)
 
 
+async def get_google_client(
+    async_client: httpx.AsyncClient = Depends(get_async_client),
+) -> GoogleClient:
+    return GoogleClient(settings=Settings(), async_client=async_client)
+
+
 def get_auth_service(
     user_repository: UserRepository = Depends(get_user_repository),
+    google_client: GoogleClient = Depends(get_google_client),
 ) -> AuthService:
-    return AuthService(user_repository=user_repository, settings=Settings())
+    return AuthService(
+        user_repository=user_repository,
+        settings=Settings(),
+        google_client=google_client,
+    )
 
 
 def get_user_service(

@@ -8,10 +8,10 @@ class UserLoginSchema(BaseModel):
 
 
 class UserCreateSchema(BaseModel):
-    username: Optional[str] = None
-    password: Optional[str] = None
-    email: Optional[str] = None
-    name: Optional[str] = None
+    username: str | None = None
+    password: str | None = None
+    email: str | None = None
+    name: str | None = None
 
 
 class GoogleUserData(BaseModel):

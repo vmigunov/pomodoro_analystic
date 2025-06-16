@@ -15,16 +15,16 @@ from app.settings import Settings
 from app.exceptions import TokenExpired, TokenNotCorrect
 from client.google_client import GoogleClient
 from client.yandex_client import YandexClient
-
+from sqlalchemy.ext.asyncio import AsyncSession
 
 async def get_async_client() -> httpx.AsyncClient:
     return httpx.AsyncClient()
 
 
-def get_tasks_repository(
-    db_session: Session = Depends(get_db_session),
+async def get_tasks_repository(
+    db_session: AsyncSession = Depends(get_db_session),
 ) -> TaskRepository:
-    return TaskRepository(db_session=db_session)
+    return TaskRepository(db_session)
 
 
 def get_tasks_cahce_repository() -> TaskCache:
@@ -60,7 +60,7 @@ async def get_yandex_client(
 def get_auth_service(
     user_repository: UserRepository = Depends(get_user_repository),
     google_client: GoogleClient = Depends(get_google_client),
-    yandex_client: YandexClient = Depends(get_yandex_client)
+    yandex_client: YandexClient = Depends(get_yandex_client),
 ) -> AuthService:
     return AuthService(
         user_repository=user_repository,

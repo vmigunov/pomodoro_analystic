@@ -9,13 +9,13 @@ class TaskService:
     task_repository: TaskRepository
     task_cache: TaskCache
 
-    def get_tasks(self) -> list[Task]:
-        if cache_tasks := self.task_cache.get_tasks():
+    async def get_tasks(self) -> list[Task]:
+        if cache_tasks := await self.task_cache.get_tasks():
             return cache_tasks
         else:
             tasks = self.task_repository.get_tasks()
             tasks_schema = [Task.model_validate(task) for task in tasks]
-            self.task_cache.set_tasks(tasks_schema)
+            await self.task_cache.set_tasks(tasks_schema)
             return tasks_schema
 
     def create_task(self, body: TaskCreateSchema, user_id: int) -> Task:
